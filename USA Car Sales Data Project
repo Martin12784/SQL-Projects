@@ -1,0 +1,160 @@
+---inspecting data
+
+SELECT * 
+
+FROM USA_cars_datasets 
+
+ORDER BY mileage DESC
+
+
+---cars sold by brand
+
+SELECT brand, COUNT(vin) count_of_cars
+
+FROM USA_cars_datasets
+
+GROUP BY brand
+
+ORDER BY count_of_cars DESC
+
+
+---cars sold by color
+
+SELECT color, 
+	   COUNT(vin) countofcars
+
+FROM USA_cars_datasets
+
+GROUP BY color
+
+ORDER BY countofcars DESC
+
+
+---cars sold by preffered year
+
+SELECT YEAR,
+	   brand,
+       COUNT(vin) countofcars 
+
+FROM USA_cars_datasets
+
+GROUP BY YEAR,
+		brand
+
+ORDER BY countofcars DESC
+
+
+--- average mileage by brand/model
+
+select brand, 
+	   model,
+	   AVG(CAST(mileage as int))avgmileage
+
+from USA_cars_datasets 
+
+GROUP BY brand, 
+		 model
+
+ORDER BY avgmileage DESC
+
+
+
+---average price of all cars
+
+SELECT brand,
+	   model,
+	   AVG(CAST(price as int))avgprice
+
+FROM USA_cars_datasets
+
+GROUP BY brand,
+		 model
+
+ORDER BY avgprice DESC
+
+
+
+---states with the highest car sales
+
+SELECT STATE, 
+	   COUNT(vin) countofcars 
+
+from USA_cars_datasets
+
+GROUP BY state
+
+ORDER BY countofcars DESC
+
+---most popular car in pennsylvania
+
+SELECT TOP 1 state, 
+			 brand, 
+			 model, 
+			 COUNT(vin) countofcars 
+			
+FROM USA_cars_datasets 
+
+WHERE state = 'pennsylvania' 
+
+GROUP BY brand, 
+		 model, 
+		 state
+
+ORDER BY countofcars DESC
+
+--- most popular car in Florida
+select top 1 state, 
+			 brand, 
+			 model, 
+			 count(vin) countofcars 
+
+from USA_cars_datasets 
+
+where state = 'Florida'
+
+group by brand, 
+		 model, 
+		 state
+
+order by countofcars desc
+
+
+---percentage of ford buyers in the USA by state using CTE's
+
+WITH fords AS 
+(
+
+SELECT country, 
+
+		state, 
+
+		count(brand) as number_of_fords
+
+from USA_cars_datasets
+
+where brand = 'ford'
+
+group by  country, 
+		  state
+)
+
+SELECT STATE, 
+
+	   country, 
+
+	   number_of_fords* 100.0  / (select count(*) from USA_cars_datasets) 
+
+	   as percentage_of_fords
+
+from fords 
+
+group by country,
+
+		 state, 
+
+		 fords.number_of_fords
+
+ORDER BY fords.number_of_fords DESC
+
+
+
