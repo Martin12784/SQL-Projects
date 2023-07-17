@@ -1,0 +1,113 @@
+--- source - https://www.kaggle.com/datasets/utkarshxy/who-worldhealth-statistics-2020-complete?select=infantMortalityRate.csv
+
+
+---inspect the data
+
+select * from mortality
+
+select * from expectancy
+
+--- Mortality and Life Expectancy rate by country in 2019
+
+SELECT Mortality.Location, 
+
+	   Mortality.period,
+
+	   Mortality.[MortalityRate],
+
+	   expectancy.Location, 
+
+	   expectancy.period, 
+
+	   expectancy.[LifeExpectancy]
+
+from Mortality
+
+join expectancy
+
+on mortality.location = expectancy.location
+
+where mortality.period = '2019' and 
+
+	  expectancy.period = '2019'
+
+group by mortality.period, 
+		 expectancy.period, 
+		 mortality.location, 
+		 expectancy.location,  
+		 mortality.[MortalityRate], 
+		 expectancy.[LifeExpectancy]
+
+order by mortality.period desc, 
+		expectancy.period desc
+
+--- year and Country with the lowest mortality rate 
+Select top 1(mortality.[MortalityRate]) Mortality_Rate, 
+	   location, 
+	   period  
+
+from Mortality
+
+where mortalityrate = 
+(
+select (min(mortality.[MortalityRate])) from mortality
+)
+group by mortality.[MortalityRate],
+		 location, 
+		 period
+
+order by Mortality_Rate asc
+
+--- country and gender with the highest life expectancy
+
+select top 1 [LifeExpectancy], location, gender
+from expectancy
+order by lifeexpectancy desc
+
+---average life expctancy by country
+
+select avg(lifeexpectancy) life, location
+from expectancy
+group by location
+order by 1 desc
+
+--- average life expectancy of women in the world
+
+select avg(lifeexpectancy) life, gender
+from expectancy 
+where gender = 'Female' 
+group by gender
+
+---country with the highest mortality rate 
+select top 1 ([MortalityRate]), period, location 
+from mortality
+group by mortalityrate, location, period
+order by mortalityrate desc
+
+---country with the fastest increasing life expectancy rate
+
+select top 1 location,period, lifeexpectancy, increase
+
+FROM (
+				select period, location, lifeexpectancy,
+				LEAD(lifeexpectancy) over
+				(order by period) - lifeexpectancy as increase
+				from expectancy
+)
+as math
+
+order by increase desc
+
+--- country with the fastest increasing mortality rate by year
+
+select top 1 location,period, lifeexpectancy, increase
+
+FROM (
+				select period, location, lifeexpectancy,
+				LEAD(lifeexpectancy) over
+				(order by period) - lifeexpectancy as increase
+				from expectancy
+)
+as rate
+
+order by increase desc
