@@ -1,0 +1,58 @@
+ALTER TABLE profits
+DROP COLUMN Sales
+
+--- Inspecting Data
+
+select * from [sales]
+select * from [profits]
+
+----- Sales By Product
+
+select Product_Name, sum(Sales) 
+from [sales]
+group by Product_Name
+order by 2 desc
+
+--- sales by shipping methon
+
+SELECT profits.Ship_Mode, sum(sales.sales) money
+from [dbo].[profits]
+inner JOIN [dbo].[sales]
+ON profits.Customer_ID = sales.Customer_ID
+group by profits.Ship_Mode
+order by money desc
+
+
+--- sales by month
+
+select
+   Month(profits.Order_Date)		Months,
+  year(profits.Order_Date)        Years,
+   count(profits.customer_id)       frequency,
+   sum(sales.sales)				MonthlySales
+from profits
+join sales
+on profits.Customer_ID = sales.Customer_ID
+group by 
+	month(profits.Order_Date),
+	year(profits.Order_Date)
+
+order by
+	years desc,
+	months asc
+	
+
+--sales by year
+
+select
+   year(profits.Order_Date)		Years,
+   count(profits.customer_id)       frequency,
+   sum(sales.sales)			YearlySales
+
+from profits
+join sales
+on profits.Customer_ID = sales.Customer_ID
+group by 
+	year(profits.Order_Date)
+order by 
+	year(profits.Order_Date) desc
