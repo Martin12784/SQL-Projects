@@ -13,7 +13,7 @@ from [sales]
 group by Product_Name
 order by 2 desc
 
---- sales by shipping methon
+--- sales by shipping method
 
 SELECT profits.Ship_Mode, sum(sales.sales) money
 from [dbo].[profits]
